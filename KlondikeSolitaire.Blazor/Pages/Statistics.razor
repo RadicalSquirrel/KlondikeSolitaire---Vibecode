@@ -1,0 +1,227 @@
+@page "/statistics"
+@using KlondikeSolitaire.Blazor.Services
+@inject StatisticsService StatsService
+@inject NavigationManager Navigation
+
+<div class="statistics-page">
+    <div class="stats-header">
+        <h1>Game Statistics</h1>
+        <button @onclick="GoBack" class="btn btn-secondary">Back to Game</button>
+    </div>
+
+    @if (stats != null)
+    {
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🎮</div>
+                <div class="stat-value">@stats.TotalGamesPlayed</div>
+                <div class="stat-label">Total Games</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-value">@stats.TotalGamesWon</div>
+                <div class="stat-label">Games Won</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value">@stats.WinRate.ToString("F1")%</div>
+                <div class="stat-label">Win Rate</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-value">@(stats.HighestScore > 0 ? stats.HighestScore.ToString() : "N/A")</div>
+                <div class="stat-label">Highest Score</div>
+            </div>
+        </div>
+
+        <div class="stats-details">
+            @if (stats.HighestScore > 0 && !string.IsNullOrEmpty(stats.HighestScoreConfig))
+            {
+                <div class="detail-section">
+                    <h3>🏅 Highest Score Achievement</h3>
+                    <p><strong>Score:</strong> @stats.HighestScore</p>
+                    <p><strong>Configuration:</strong> @StatisticsService.FormatConfigName(stats.HighestScoreConfig)</p>
+                </div>
+            }
+
+            @if (stats.FastestWin != TimeSpan.MaxValue && !string.IsNullOrEmpty(stats.FastestWinConfig))
+            {
+                <div class="detail-section">
+                    <h3>⚡ Fastest Win</h3>
+                    <p><strong>Time:</strong> @stats.FastestWin.ToString(@"mm\:ss")</p>
+                    <p><strong>Configuration:</strong> @StatisticsService.FormatConfigName(stats.FastestWinConfig)</p>
+                </div>
+            }
+
+            @if (stats.ConfigUsageCount.Count > 0)
+            {
+                <div class="detail-section">
+                    <h3>📋 Configuration Usage</h3>
+                    <p><strong>Most Used:</strong> @StatisticsService.FormatConfigName(stats.GetMostUsedConfig())</p>
+                    <div class="config-list">
+                        @foreach (var config in stats.ConfigUsageCount.OrderByDescending(x => x.Value).Take(5))
+                        {
+                            <div class="config-item">
+                                <span class="config-name">@StatisticsService.FormatConfigName(config.Key)</span>
+                                <span class="config-count">@config.Value game(s)</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (stats.LastPlayed.HasValue)
+            {
+                <div class="detail-section">
+                    <h3>🕒 Last Played</h3>
+                    <p>@stats.LastPlayed.Value.ToString("g")</p>
+                </div>
+            }
+        </div>
+
+        @if (stats.TotalGamesPlayed == 0)
+        {
+            <div class="no-stats">
+                <p>No games played yet. Start playing to see your statistics!</p>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="loading">Loading statistics...</div>
+    }
+</div>
+
+<style>
+    .statistics-page {
+        padding: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, #1e5128 0%, #2d6a4f 100%);
+        min-height: 100vh;
+        color: white;
+    }
+
+    .stats-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .stats-header h1 {
+        margin: 0;
+        font-size: 2.5rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 30px;
+        text-align: center;
+        transition: transform 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .stat-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .stats-details {
+        display: grid;
+        gap: 20px;
+    }
+
+    .detail-section {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .detail-section h3 {
+        margin: 0 0 15px 0;
+        font-size: 1.5rem;
+    }
+
+    .detail-section p {
+        margin: 8px 0;
+        font-size: 1.1rem;
+    }
+
+    .config-list {
+        margin-top: 15px;
+    }
+
+    .config-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 6px;
+        margin-bottom: 8px;
+    }
+
+    .config-name {
+        font-weight: 500;
+    }
+
+    .config-count {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .no-stats {
+        text-align: center;
+        padding: 60px 20px;
+        font-size: 1.2rem;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 60px 20px;
+        font-size: 1.3rem;
+    }
+</style>
+
+@code {
+    private KlondikeSolitaire.Core.Models.GameStatistics? stats;
+
+    protected override async Task OnInitializedAsync()
+    {
+        stats = await StatsService.LoadStatisticsAsync();
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

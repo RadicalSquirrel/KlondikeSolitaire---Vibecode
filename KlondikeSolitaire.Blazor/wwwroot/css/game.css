@@ -1,0 +1,366 @@
+/* Game Board Styles */
+.game-board {
+    padding: 20px;
+    background: linear-gradient(135deg, #1e5128 0%, #2d6a4f 100%);
+    min-height: 100vh;
+    color: white;
+}
+
+.game-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+.game-stats {
+    display: flex;
+    gap: 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.game-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #4CAF50;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-secondary {
+    background: #757575;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #616161;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Top Area */
+.top-area {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    gap: 20px;
+}
+
+.stock-waste-area {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.stock {
+    position: relative;
+    cursor: pointer;
+}
+
+.stock-count {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: white;
+}
+
+.waste {
+    min-width: 100px;
+}
+
+.waste-cards {
+    display: flex;
+    gap: -60px;
+    position: relative;
+}
+
+.waste-card {
+    position: relative;
+}
+
+.waste-card:not(:first-child) {
+    margin-left: -60px;
+}
+
+/* Foundations */
+.foundations {
+    display: flex;
+    gap: 15px;
+}
+
+.foundation {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.foundation:hover {
+    transform: translateY(-5px);
+}
+
+/* Tableau */
+.tableau {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.tableau-column {
+    min-height: 400px;
+    position: relative;
+    flex: 1;
+    max-width: 120px;
+}
+
+.column-header {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.tableau-card {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.tableau-card:hover {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+/* Card Component Styles */
+.card {
+    width: 100px;
+    height: 140px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    background: white;
+    position: relative;
+    transition: all 0.2s ease;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.card.draggable {
+    cursor: grab;
+}
+
+.card.draggable:active {
+    cursor: grabbing;
+}
+
+.card.highlighted {
+    box-shadow: 0 0 0 4px #4dd0e1, 0 0 20px rgba(77, 208, 225, 0.6);
+    transform: translateY(-5px);
+    background: linear-gradient(135deg, rgba(77, 208, 225, 0.15) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.card-content {
+    padding: 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.card-content.red {
+    color: #d32f2f;
+}
+
+.card-content.black {
+    color: #000;
+}
+
+.card-top {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.card-rank {
+    font-size: 1.6rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.card-suit-small {
+    font-size: 1.3rem;
+    line-height: 1;
+}
+
+.card-suit-large {
+    font-size: 2.5rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.3;
+}
+
+.card-back {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-pattern {
+    width: 80%;
+    height: 80%;
+    background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 255, 255, 0.1) 10px,
+        rgba(255, 255, 255, 0.1) 20px
+    );
+    border-radius: 4px;
+}
+
+.card-placeholder {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.card.empty .card-placeholder {
+    background: transparent;
+}
+
+/* Win Overlay */
+.win-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.win-message {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    color: #333;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.win-message h1 {
+    margin: 0 0 20px 0;
+    color: #4CAF50;
+    font-size: 2.5rem;
+}
+
+.win-message p {
+    margin: 10px 0;
+    font-size: 1.2rem;
+}
+
+.final-score, .final-time {
+    font-weight: bold;
+    color: #1565c0;
+}
+
+/* No Game State */
+.no-game {
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.no-game h2 {
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+/* Error Message */
+.error-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 25px;
+    margin: 10px auto 20px;
+    max-width: 800px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+    font-size: 1.05rem;
+    font-weight: 500;
+    animation: slideDown 0.3s ease-out;
+}
+
+.error-icon {
+    font-size: 1.5rem;
+    animation: shake 0.5s ease-in-out;
+}
+
+.error-text {
+    flex: 1;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
+}

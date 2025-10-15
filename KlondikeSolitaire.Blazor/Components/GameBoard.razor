@@ -1,0 +1,460 @@
+@using KlondikeSolitaire.Core.Models
+@using KlondikeSolitaire.Blazor.Services
+@inject GameService GameService
+@implements IDisposable
+
+<div class="game-board">
+    @if (GameService.CurrentGame != null)
+    {
+        <div class="game-info">
+            <div class="game-stats">
+                @if (GameService.CurrentGame.Options.EnableScoring)
+                {
+                    <span class="score">Score: @GameService.CurrentGame.Score</span>
+                    <span class="time">Time: @currentElapsedTime.ToString(@"mm\:ss")</span>
+                }
+                <span class="redeals">Redeals: @GameService.CurrentGame.StockRedeals/@(GameService.CurrentGame.Options.MaxStockRedeals < 0 ? "∞" : GameService.CurrentGame.Options.MaxStockRedeals.ToString())</span>
+            </div>
+            <div class="game-actions">
+                <button @onclick="OnStockClick" class="btn btn-primary">Draw</button>
+                <button @onclick="OnUndoClick" class="btn btn-secondary">Undo</button>
+                <button @onclick="OnNewGame" class="btn btn-secondary">New Game</button>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">
+                <span class="error-icon">⚠️</span>
+                <span class="error-text">@errorMessage</span>
+            </div>
+        }
+
+        <div class="top-area">
+            <!-- Stock and Waste -->
+            <div class="stock-waste-area">
+                <div class="stock" @onclick="OnStockClick">
+                    @if (GameService.CurrentGame.StockCount > 0)
+                    {
+                        <CardComponent Card="new Card(Suit.Hearts, Rank.Ace) { IsFaceUp = false }" />
+                        <div class="stock-count">@GameService.CurrentGame.StockCount</div>
+                    }
+                    else
+                    {
+                        <CardComponent Card="null" PlaceholderText="♻" />
+                    }
+                </div>
+
+                <div class="waste">
+                    @if (GameService.CurrentGame.WasteCount > 0 && GameService.CurrentGame.WasteIndex >= 0)
+                    {
+                        var visibleCards = GameService.CurrentGame.Waste
+                            .Skip(Math.Max(0, GameService.CurrentGame.WasteIndex - GameService.CurrentGame.Options.DrawCount + 1))
+                            .Take(GameService.CurrentGame.Options.DrawCount)
+                            .ToList();
+
+                        <div class="waste-cards">
+                            @foreach (var card in visibleCards)
+                            {
+                                var isLastCard = card == visibleCards.Last();
+                                <div class="waste-card" @onclick="() => OnWasteClick()">
+                                    <CardComponent Card="card" IsDraggable="true" IsHighlighted="@(isLastCard && selectedFromWaste)" />
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <CardComponent Card="null" />
+                    }
+                </div>
+            </div>
+
+            <!-- Foundations -->
+            <div class="foundations">
+                @for (int i = 0; i < 4; i++)
+                {
+                    var foundationIndex = i;
+                    <div class="foundation"
+                         @onclick="() => OnFoundationClick(foundationIndex)"
+                         @ondrop="() => OnFoundationDrop(foundationIndex)"
+                         @ondragover:preventDefault>
+                        @if (GameService.CurrentGame.Foundations[foundationIndex].Count > 0)
+                        {
+                            var topCard = GameService.CurrentGame.Foundations[foundationIndex][^1];
+                            <CardComponent Card="topCard" IsDraggable="true" IsHighlighted="@(selectedFoundation == foundationIndex)" />
+                        }
+                        else
+                        {
+                            <CardComponent Card="null" PlaceholderText="@((foundationIndex + 1).ToString())" />
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Tableau -->
+        <div class="tableau">
+            @for (int col = 0; col < 7; col++)
+            {
+                var colIndex = col;
+                <div class="tableau-column"
+                     @ondrop="() => OnTableauDrop(colIndex)"
+                     @ondragover:preventDefault>
+                    <div class="column-header">@(col + 1)</div>
+                    @if (GameService.CurrentGame.Tableau[col].Count > 0)
+                    {
+                        @for (int row = 0; row < GameService.CurrentGame.Tableau[col].Count; row++)
+                        {
+                            var card = GameService.CurrentGame.Tableau[col][row];
+                            var cardRow = row;
+                            var canDrag = card.IsFaceUp;
+
+                            <div class="tableau-card"
+                                 style="margin-top: @(row * 35)px; z-index: @(card.IsFaceUp ? 100 + row : row);"
+                                 @onclick="() => OnTableauCardClick(colIndex, cardRow)">
+                                <CardComponent Card="card"
+                                               IsDraggable="@canDrag"
+                                               IsHighlighted="@(selectedTableauCol == colIndex && selectedCardIndex == cardRow)" />
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div @onclick="() => OnEmptyTableauClick(colIndex)">
+                            <CardComponent Card="null" />
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (GameService.CurrentGame.IsGameWon())
+        {
+            <div class="win-overlay">
+                <div class="win-message">
+                    <h1>🎉 Congratulations! 🎉</h1>
+                    <p>You won!</p>
+                    @if (GameService.CurrentGame.Options.EnableScoring)
+                    {
+                        <p class="final-score">Final Score: @GameService.CurrentGame.Score</p>
+                        <p class="final-time">Time: @GameService.CurrentGame.ElapsedTime.ToString(@"mm\:ss")</p>
+                    }
+                    <button @onclick="OnNewGame" class="btn btn-primary">New Game</button>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="no-game">
+            <h2>Welcome to Klondike Solitaire!</h2>
+            <button @onclick="OnNewGame" class="btn btn-primary">Start New Game</button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public EventCallback OnNewGameRequested { get; set; }
+
+    private int? selectedTableauCol;
+    private int? selectedCardIndex;
+    private bool selectedFromWaste;
+    private int? selectedFoundation;
+    private string? errorMessage;
+    private System.Threading.Timer? timer;
+    private TimeSpan currentElapsedTime = TimeSpan.Zero;
+
+    protected override void OnInitialized()
+    {
+        GameService.OnGameStateChanged += StateHasChanged;
+
+        // Start timer that updates every second
+        timer = new System.Threading.Timer((_) =>
+        {
+            if (GameService.CurrentGame != null && !GameService.CurrentGame.IsGameWon())
+            {
+                currentElapsedTime = GameService.CurrentGame.ElapsedTime;
+                InvokeAsync(StateHasChanged);
+            }
+        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+    }
+
+    private async Task OnNewGame()
+    {
+        ClearSelection();
+        ClearError();
+        await OnNewGameRequested.InvokeAsync();
+    }
+
+    private void OnStockClick()
+    {
+        ClearError();
+        ClearSelection();
+        GameService.DrawFromStock();
+    }
+
+    private void OnUndoClick()
+    {
+        ClearError();
+        ClearSelection();
+        GameService.UndoLastMove();
+    }
+
+    private void OnWasteClick()
+    {
+        ClearError();
+
+        // Toggle selection if clicking the same card again
+        if (selectedFromWaste)
+        {
+            ClearSelection();
+        }
+        else
+        {
+            selectedFromWaste = true;
+            selectedTableauCol = null;
+            selectedFoundation = null;
+        }
+    }
+
+    private void OnFoundationClick(int foundationIndex)
+    {
+        ClearError();
+
+        if (selectedFromWaste && GameService.CurrentGame!.WasteCount > 0)
+        {
+            if (!GameService.MoveWasteToFoundation(foundationIndex))
+            {
+                ShowError("Cannot place this card on that foundation. Cards must be placed in ascending order by suit (Ace, 2, 3, ..., King).");
+            }
+            else
+            {
+                selectedFromWaste = false;
+            }
+        }
+        else if (selectedTableauCol.HasValue)
+        {
+            if (!GameService.MoveTableauToFoundation(selectedTableauCol.Value, foundationIndex))
+            {
+                ShowError("Cannot place this card on that foundation. Foundations must start with an Ace and build up by suit.");
+            }
+            else
+            {
+                selectedTableauCol = null;
+                selectedCardIndex = null;
+            }
+        }
+        else
+        {
+            // Toggle selection if clicking the same foundation again
+            if (selectedFoundation == foundationIndex)
+            {
+                ClearSelection();
+            }
+            else
+            {
+                selectedFoundation = foundationIndex;
+                selectedFromWaste = false;
+                selectedTableauCol = null;
+            }
+        }
+    }
+
+    private void OnFoundationDrop(int foundationIndex)
+    {
+        OnFoundationClick(foundationIndex);
+    }
+
+    private void OnTableauCardClick(int col, int cardIndex)
+    {
+        var card = GameService.CurrentGame!.Tableau[col][cardIndex];
+
+        if (!card.IsFaceUp) return;
+
+        ClearError();
+
+        // Check if clicking the same card again (unselect) or same column (unselect)
+        if (selectedTableauCol.HasValue && selectedCardIndex.HasValue)
+        {
+            if (selectedTableauCol == col && selectedCardIndex == cardIndex)
+            {
+                // Clicking same card - unselect
+                ClearSelection();
+                return;
+            }
+            else if (selectedTableauCol == col)
+            {
+                // Clicking different card in same column - unselect and don't try to move
+                ClearSelection();
+                return;
+            }
+        }
+
+        if (selectedFromWaste)
+        {
+            if (!GameService.MoveWasteToTableau(col))
+            {
+                if (GameService.CurrentGame.Tableau[col].Count == 0)
+                {
+                    if (GameService.CurrentGame.Options.AllowAnyCardInEmptyTableau)
+                    {
+                        ShowError("Cannot place this card here.");
+                    }
+                    else
+                    {
+                        ShowError("Only Kings can be placed in empty tableau columns.");
+                    }
+                }
+                else
+                {
+                    ShowError("Cards must be placed in descending order with alternating colors (e.g., Red 7 on Black 8).");
+                }
+            }
+            else
+            {
+                selectedFromWaste = false;
+            }
+        }
+        else if (selectedFoundation.HasValue)
+        {
+            if (!GameService.MoveFoundationToTableau(selectedFoundation.Value, col))
+            {
+                ShowError("Cannot move card from foundation to tableau. Either the move is disabled in settings or the card placement is invalid.");
+            }
+            else
+            {
+                selectedFoundation = null;
+            }
+        }
+        else if (selectedTableauCol.HasValue && selectedCardIndex.HasValue)
+        {
+            // Moving from one tableau column to another
+            if (!GameService.MoveTableauToTableau(selectedTableauCol.Value, col, selectedCardIndex.Value))
+            {
+                if (GameService.CurrentGame.Tableau[col].Count == 0)
+                {
+                    if (GameService.CurrentGame.Options.AllowAnyCardInEmptyTableau)
+                    {
+                        ShowError("Cannot place these cards here.");
+                    }
+                    else
+                    {
+                        ShowError("Only Kings can be placed in empty tableau columns.");
+                    }
+                }
+                else
+                {
+                    ShowError("Cards must be placed in descending order with alternating colors.");
+                }
+            }
+            else
+            {
+                selectedTableauCol = null;
+                selectedCardIndex = null;
+            }
+        }
+        else
+        {
+            // Select this card
+            selectedTableauCol = col;
+            selectedCardIndex = cardIndex;
+            selectedFromWaste = false;
+            selectedFoundation = null;
+        }
+    }
+
+    private void OnTableauDrop(int col)
+    {
+        OnTableauCardClick(col, 0);
+    }
+
+    private void OnEmptyTableauClick(int col)
+    {
+        ClearError();
+
+        if (selectedFromWaste)
+        {
+            if (!GameService.MoveWasteToTableau(col))
+            {
+                if (GameService.CurrentGame!.Options.AllowAnyCardInEmptyTableau)
+                {
+                    ShowError("Cannot place this card here.");
+                }
+                else
+                {
+                    ShowError("Only Kings can be placed in empty tableau columns.");
+                }
+            }
+            else
+            {
+                selectedFromWaste = false;
+            }
+        }
+        else if (selectedFoundation.HasValue)
+        {
+            if (!GameService.MoveFoundationToTableau(selectedFoundation.Value, col))
+            {
+                ShowError("Cannot move card from foundation to tableau. Either the move is disabled in settings or the card placement is invalid.");
+            }
+            else
+            {
+                selectedFoundation = null;
+            }
+        }
+        else if (selectedTableauCol.HasValue && selectedCardIndex.HasValue)
+        {
+            if (!GameService.MoveTableauToTableau(selectedTableauCol.Value, col, selectedCardIndex.Value))
+            {
+                if (GameService.CurrentGame!.Options.AllowAnyCardInEmptyTableau)
+                {
+                    ShowError("Cannot place these cards here.");
+                }
+                else
+                {
+                    ShowError("Only Kings can be placed in empty tableau columns.");
+                }
+            }
+            else
+            {
+                selectedTableauCol = null;
+                selectedCardIndex = null;
+            }
+        }
+    }
+
+    private void ShowError(string message)
+    {
+        errorMessage = message;
+
+        // Auto-clear error after 4 seconds
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(4000);
+            await InvokeAsync(() =>
+            {
+                errorMessage = null;
+                StateHasChanged();
+            });
+        });
+    }
+
+    private void ClearError()
+    {
+        errorMessage = null;
+    }
+
+    private void ClearSelection()
+    {
+        selectedTableauCol = null;
+        selectedCardIndex = null;
+        selectedFromWaste = false;
+        selectedFoundation = null;
+    }
+
+    public void Dispose()
+    {
+        GameService.OnGameStateChanged -= StateHasChanged;
+        timer?.Dispose();
+    }
+}

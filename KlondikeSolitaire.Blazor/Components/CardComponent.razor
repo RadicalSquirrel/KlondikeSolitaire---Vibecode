@@ -1,0 +1,123 @@
+@using KlondikeSolitaire.Core.Models
+
+<div class="card @GetCardClass()"
+     @onclick="OnCardClick"
+     draggable="@IsDraggable.ToString().ToLower()"
+     @ondragstart="OnDragStart"
+     @ondragover:preventDefault
+     @ondrop="OnDrop">
+    @if (Card != null)
+    {
+        @if (Card.IsFaceUp)
+        {
+            <div class="card-content @GetColorClass()">
+                <div class="card-top">
+                    <span class="card-rank">@GetRankString()</span>
+                    <span class="card-suit-small">@GetSuitSymbol()</span>
+                </div>
+                <div class="card-suit-large">@GetSuitSymbol()</div>
+            </div>
+        }
+        else
+        {
+            <div class="card-back">
+                <div class="card-pattern"></div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card-placeholder">
+            @if (!string.IsNullOrEmpty(PlaceholderText))
+            {
+                <span>@PlaceholderText</span>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public Card? Card { get; set; }
+    [Parameter] public bool IsDraggable { get; set; }
+    [Parameter] public bool IsHighlighted { get; set; }
+    [Parameter] public string? PlaceholderText { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public EventCallback<Card> OnDragStarted { get; set; }
+    [Parameter] public EventCallback<Card> OnDropped { get; set; }
+
+    private async Task OnCardClick()
+    {
+        if (OnClick.HasDelegate)
+        {
+            await OnClick.InvokeAsync();
+        }
+    }
+
+    private async Task OnDragStart()
+    {
+        if (Card != null && OnDragStarted.HasDelegate)
+        {
+            await OnDragStarted.InvokeAsync(Card);
+        }
+    }
+
+    private async Task OnDrop()
+    {
+        if (Card != null && OnDropped.HasDelegate)
+        {
+            await OnDropped.InvokeAsync(Card);
+        }
+    }
+
+    private string GetCardClass()
+    {
+        var classes = new List<string>();
+
+        if (Card == null)
+            classes.Add("empty");
+        else if (!Card.IsFaceUp)
+            classes.Add("face-down");
+
+        if (IsHighlighted)
+            classes.Add("highlighted");
+
+        if (IsDraggable)
+            classes.Add("draggable");
+
+        return string.Join(" ", classes);
+    }
+
+    private string GetColorClass()
+    {
+        return Card?.Color == CardColor.Red ? "red" : "black";
+    }
+
+    private string GetRankString()
+    {
+        if (Card == null) return "";
+
+        return Card.Rank switch
+        {
+            Rank.Ace => "A",
+            Rank.Jack => "J",
+            Rank.Queen => "Q",
+            Rank.King => "K",
+            Rank.Ten => "10",
+            _ => ((int)Card.Rank).ToString()
+        };
+    }
+
+    private string GetSuitSymbol()
+    {
+        if (Card == null) return "";
+
+        return Card.Suit switch
+        {
+            Suit.Hearts => "♥",
+            Suit.Diamonds => "♦",
+            Suit.Clubs => "♣",
+            Suit.Spades => "♠",
+            _ => ""
+        };
+    }
+}

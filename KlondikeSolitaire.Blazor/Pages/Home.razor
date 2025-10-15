@@ -1,0 +1,101 @@
+﻿@page "/"
+@using KlondikeSolitaire.Blazor.Components
+@using KlondikeSolitaire.Blazor.Services
+@using KlondikeSolitaire.Core.Models
+@inject GameService GameService
+@inject StatisticsService StatsService
+@inject NavigationManager Navigation
+
+<PageTitle>Klondike Solitaire</PageTitle>
+
+<div class="home-page">
+    <div class="header">
+        <h1>♠ Klondike Solitaire ♥</h1>
+        <div class="nav-buttons">
+            <button @onclick="ShowSettings" class="btn btn-primary">New Game</button>
+            <button @onclick="GoToStatistics" class="btn btn-secondary">Statistics</button>
+        </div>
+    </div>
+
+    <GameBoard OnNewGameRequested="ShowSettings" />
+
+    <GameSettings
+        IsVisible="showSettings"
+        OnStartNewGame="StartNewGame"
+        OnCancel="HideSettings" />
+</div>
+
+@code {
+    private bool showSettings = false;
+
+    protected override void OnInitialized()
+    {
+        if (GameService.CurrentGame == null)
+        {
+            showSettings = true;
+        }
+    }
+
+    private void ShowSettings()
+    {
+        showSettings = true;
+    }
+
+    private void HideSettings()
+    {
+        showSettings = false;
+    }
+
+    private async Task StartNewGame(GameOptions options)
+    {
+        // Save statistics if there was a previous game
+        if (GameService.CurrentGame != null)
+        {
+            var previousGame = GameService.CurrentGame;
+            var stats = await StatsService.LoadStatisticsAsync();
+            stats.RecordGame(
+                previousGame.Options,
+                previousGame.IsGameWon(),
+                previousGame.Score,
+                previousGame.ElapsedTime
+            );
+            await StatsService.SaveStatisticsAsync(stats);
+        }
+
+        GameService.StartNewGame(options);
+        showSettings = false;
+    }
+
+    private void GoToStatistics()
+    {
+        Navigation.NavigateTo("/statistics");
+    }
+}
+
+<style>
+    .home-page {
+        min-height: 100vh;
+    }
+
+    .header {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .header h1 {
+        margin: 0;
+        color: white;
+        font-size: 2rem;
+    }
+
+    .nav-buttons {
+        display: flex;
+        gap: 10px;
+    }
+</style>
