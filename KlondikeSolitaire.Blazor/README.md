@@ -71,9 +71,46 @@ KlondikeSolitaire.Blazor/
 - **Browser LocalStorage** - For statistics persistence
 - **CSS3** - Animations and styling
 
+## Progressive Web App (PWA)
+
+This application is a full PWA and can be installed on your device for native-like experience:
+
+### Installing on iPhone/iPad
+
+1. Open the app in Safari
+2. Tap the Share button (square with arrow pointing up)
+3. Scroll down and tap "Add to Home Screen"
+4. Tap "Add" to install
+5. The app will appear on your home screen with its icon
+6. Launch it for a full-screen, native-like experience
+
+### Installing on Android
+
+1. Open the app in Chrome
+2. Tap the three-dot menu
+3. Select "Install app" or "Add to Home Screen"
+4. Follow the prompts to install
+5. Launch from your app drawer
+
+### Installing on Desktop
+
+1. Open the app in Chrome, Edge, or other Chromium browser
+2. Look for the install icon in the address bar (computer with down arrow)
+3. Click it and follow the prompts
+4. The app will be available as a standalone application
+
+### PWA Features
+
+- **Offline Support**: Service worker caches resources for offline play
+- **Installable**: Add to home screen for native app experience
+- **Standalone Mode**: Runs fullscreen without browser chrome
+- **App Icons**: Custom icons for all platforms
+- **No Zoom**: Optimized viewport prevents accidental zooming
+- **Auto Updates**: Automatically updates when new version is deployed
+
 ## Browser Compatibility
 
 Works in all modern browsers that support WebAssembly:
 - Chrome/Edge 91+
 - Firefox 89+
-- Safari 15+
+- Safari 15+ (iOS 15+ for PWA features)

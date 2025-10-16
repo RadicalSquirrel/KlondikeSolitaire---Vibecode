@@ -3,12 +3,33 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Klondike Solitaire</title>
+    <meta name="description" content="Classic Klondike Solitaire card game with modern UI" />
     <base href="/" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Standard favicon -->
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Solitaire" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="icon-192.png" />
+
+    <!-- Theme color -->
+    <meta name="theme-color" content="#2d6a4f" />
+    <meta name="msapplication-TileColor" content="#2d6a4f" />
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="css/game.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />
     <link href="KlondikeSolitaire.Blazor.styles.css" rel="stylesheet" />
 </head>
 
@@ -27,6 +48,7 @@
         <span class="dismiss">🗙</span>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script src="service-worker-register.js"></script>
 </body>
 
 </html>
