@@ -47,7 +47,7 @@ jobs:
 
     - name: Change base href in index.html
       run: |
-        sed -i 's|<base href="/" />|<base href="/KlondikeSolitaire/" />|g' publish/wwwroot/index.html
+        sed -i 's|<base href="/" />|<base href="/KlondikeSolitaire---Vibecode/" />|g' publish/wwwroot/index.html
 
     - name: Add .nojekyll file
       run: touch publish/wwwroot/.nojekyll

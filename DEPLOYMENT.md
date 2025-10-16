@@ -36,12 +36,12 @@ git push origin master
 
 Your app will be available at:
 ```
-https://<your-username>.github.io/KlondikeSolitaire/
+https://<your-username>.github.io/KlondikeSolitaire---Vibecode/
 ```
 
-For example, if your GitHub username is "johndoe":
+For example, if your GitHub username is "RadicalSquirrel":
 ```
-https://johndoe.github.io/KlondikeSolitaire/
+https://radicalsquirrel.github.io/KlondikeSolitaire---Vibecode/
 ```
 
 ## How the Workflow Works
@@ -53,7 +53,7 @@ The `.github/workflows/deploy.yml` file automates the entire deployment:
 2. **Setup .NET** - Installs .NET 8.0 SDK
 3. **Restore** - Downloads NuGet packages
 4. **Publish** - Builds the Blazor app in Release mode
-5. **Update Base Href** - Changes the base path to `/KlondikeSolitaire/`
+5. **Update Base Href** - Changes the base path to `/KlondikeSolitaire---Vibecode/`
 6. **Add .nojekyll** - Prevents Jekyll processing (GitHub Pages default)
 7. **Create 404.html** - Copies index.html for SPA routing fallback
 8. **Upload & Deploy** - Publishes to GitHub Pages
@@ -95,7 +95,7 @@ If you prefer to deploy manually:
 dotnet publish KlondikeSolitaire.Blazor/KlondikeSolitaire.Blazor.csproj -c Release -o publish
 
 # Update base href
-sed -i 's/<base href="\/" \/>/<base href="\/KlondikeSolitaire\/" \/>/g' publish/wwwroot/index.html
+sed -i 's|<base href="/" />|<base href="/KlondikeSolitaire---Vibecode/" />|g' publish/wwwroot/index.html
 
 # Add .nojekyll
 touch publish/wwwroot/.nojekyll
