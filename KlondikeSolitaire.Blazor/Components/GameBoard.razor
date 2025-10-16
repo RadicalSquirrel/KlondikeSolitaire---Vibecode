@@ -16,7 +16,6 @@
                 <span class="redeals">Redeals: @GameService.CurrentGame.StockRedeals/@(GameService.CurrentGame.Options.MaxStockRedeals < 0 ? "∞" : GameService.CurrentGame.Options.MaxStockRedeals.ToString())</span>
             </div>
             <div class="game-actions">
-                <button @onclick="OnStockClick" class="btn btn-primary">Draw</button>
                 <button @onclick="OnUndoClick" class="btn btn-secondary">Undo</button>
                 <button @onclick="OnNewGame" class="btn btn-secondary">New Game</button>
             </div>
