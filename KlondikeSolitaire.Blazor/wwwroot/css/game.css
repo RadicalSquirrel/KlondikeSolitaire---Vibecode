@@ -317,12 +317,15 @@
 
 /* Error Message */
 .error-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     padding: 15px 25px;
-    margin: 10px auto 20px;
     max-width: 800px;
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
     color: white;
@@ -330,7 +333,8 @@
     box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
     font-size: 1.05rem;
     font-weight: 500;
-    animation: slideDown 0.3s ease-out;
+    animation: slideUp 0.3s ease-out;
+    z-index: 1001;
 }
 
 .error-icon {
@@ -342,14 +346,14 @@
     flex: 1;
 }
 
-@keyframes slideDown {
+@keyframes slideUp {
     from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translate(-50%, 20px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate(-50%, 0);
     }
 }
 
@@ -362,5 +366,14 @@
     }
     75% {
         transform: translateX(5px);
+    }
+}
+
+/* PWA Standalone Mode - Scale down 15% */
+@media (display-mode: standalone) {
+    .game-board {
+        transform: scale(0.85);
+        transform-origin: top center;
+        padding: 10px;
     }
 }
