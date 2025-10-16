@@ -49,6 +49,12 @@ jobs:
       run: |
         sed -i 's|<base href="/" />|<base href="/KlondikeSolitaire---Vibecode/" />|g' publish/wwwroot/index.html
 
+    - name: Update PWA manifest URLs
+      run: |
+        sed -i 's|"start_url": "/"|"start_url": "/KlondikeSolitaire---Vibecode/"|g' publish/wwwroot/manifest.json
+        sed -i 's|"url": "/"|"url": "/KlondikeSolitaire---Vibecode/"|g' publish/wwwroot/manifest.json
+        sed -i 's|"url": "/statistics"|"url": "/KlondikeSolitaire---Vibecode/statistics"|g' publish/wwwroot/manifest.json
+
     - name: Add .nojekyll file
       run: touch publish/wwwroot/.nojekyll
 
@@ -65,6 +71,9 @@ jobs:
         ls -la publish/wwwroot/index.html
         echo "Verifying base href was updated:"
         grep "base href" publish/wwwroot/index.html
+        echo "Verifying manifest URLs were updated:"
+        grep "start_url" publish/wwwroot/manifest.json
+        grep "\"url\":" publish/wwwroot/manifest.json
 
     - name: Setup Pages
       uses: actions/configure-pages@v4
