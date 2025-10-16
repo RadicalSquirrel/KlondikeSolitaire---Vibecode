@@ -42,11 +42,12 @@ jobs:
         dotnet publish KlondikeSolitaire.Blazor/KlondikeSolitaire.Blazor.csproj \
           -c Release \
           -o publish \
-          --no-restore
+          --no-restore \
+          -p:GHPages=true
 
     - name: Change base href in index.html
       run: |
-        sed -i 's/<base href="\/" \/>/<base href="\/KlondikeSolitaire\/" \/>/g' publish/wwwroot/index.html
+        sed -i 's|<base href="/" />|<base href="/KlondikeSolitaire/" />|g' publish/wwwroot/index.html
 
     - name: Add .nojekyll file
       run: touch publish/wwwroot/.nojekyll
