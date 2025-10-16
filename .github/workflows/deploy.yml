@@ -55,6 +55,15 @@ jobs:
     - name: Copy index.html to 404.html (SPA fallback)
       run: cp publish/wwwroot/index.html publish/wwwroot/404.html
 
+    - name: Verify files before upload
+      run: |
+        echo "Listing publish/wwwroot contents:"
+        ls -la publish/wwwroot/
+        echo "Checking for key files:"
+        ls -la publish/wwwroot/_framework/blazor.webassembly.js
+        ls -la publish/wwwroot/css/
+        ls -la publish/wwwroot/index.html
+
     - name: Setup Pages
       uses: actions/configure-pages@v4
 
