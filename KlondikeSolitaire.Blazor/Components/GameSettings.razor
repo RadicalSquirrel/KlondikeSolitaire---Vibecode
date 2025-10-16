@@ -184,14 +184,32 @@
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback<GameOptions> OnStartNewGame { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public GameOptions? LastGameOptions { get; set; }
 
     private GameOptions options = new GameOptions();
-    private string drawCountString = "1";
+    private string drawCountString = "3";
     private string redealString = "-1";
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        ResetToDefaults();
+        // If we have last game options, use those; otherwise use defaults
+        if (LastGameOptions != null)
+        {
+            options = new GameOptions
+            {
+                AllowAnyCardInEmptyTableau = LastGameOptions.AllowAnyCardInEmptyTableau,
+                DrawCount = LastGameOptions.DrawCount,
+                AllowFoundationToTableau = LastGameOptions.AllowFoundationToTableau,
+                MaxStockRedeals = LastGameOptions.MaxStockRedeals,
+                EnableScoring = LastGameOptions.EnableScoring
+            };
+            drawCountString = LastGameOptions.DrawCount.ToString();
+            redealString = LastGameOptions.MaxStockRedeals.ToString();
+        }
+        else
+        {
+            ResetToDefaults();
+        }
     }
 
     private void ResetToDefaults()
@@ -199,12 +217,12 @@
         options = new GameOptions
         {
             AllowAnyCardInEmptyTableau = false,
-            DrawCount = 1,
+            DrawCount = 3,
             AllowFoundationToTableau = false,
             MaxStockRedeals = -1,
             EnableScoring = true
         };
-        drawCountString = "1";
+        drawCountString = "3";
         redealString = "-1";
     }
 
@@ -214,7 +232,6 @@
         options.MaxStockRedeals = int.Parse(redealString);
 
         await OnStartNewGame.InvokeAsync(options);
-        ResetToDefaults();
     }
 
     private async Task OnClose()

@@ -21,7 +21,8 @@
     <GameSettings
         IsVisible="showSettings"
         OnStartNewGame="StartNewGame"
-        OnCancel="HideSettings" />
+        OnCancel="HideSettings"
+        LastGameOptions="GameService.CurrentGame?.Options" />
 </div>
 
 @code {
