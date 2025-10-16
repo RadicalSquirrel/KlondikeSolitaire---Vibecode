@@ -63,6 +63,8 @@ jobs:
         ls -la publish/wwwroot/_framework/blazor.webassembly.js
         ls -la publish/wwwroot/css/
         ls -la publish/wwwroot/index.html
+        echo "Verifying base href was updated:"
+        grep "base href" publish/wwwroot/index.html
 
     - name: Setup Pages
       uses: actions/configure-pages@v4
