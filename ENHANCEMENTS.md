@@ -1,9 +1,85 @@
 # Blazor UI Enhancements
 
-## Recent Updates
+## Latest Updates (January 2025)
 
-### 1. **Light Blue Card Highlighting** ✨
-Selected cards now display with a beautiful light blue (#4dd0e1) highlighting:
+### 1. **Game Over Notifications** 🚫
+Intelligent detection when no legal moves remain:
+- Checks all possible moves based on current ruleset
+- Displays game-over overlay with final score and time
+- Options to start a new game or undo last move
+- Can be toggled on/off in game settings (enabled by default)
+
+**Implementation:**
+- `HasAvailableMoves()` method in `KlondikeSolitaireGame.cs`
+- Checks stock/waste state, tableau moves, foundation moves
+- Respects all game options (King-only, Foundation→Tableau, etc.)
+- `NotifyWhenNoMovesAvailable` option in `GameOptions`
+
+### 2. **Auto-Complete Feature** 🎯
+Automatically finishes the game when victory is guaranteed:
+- Activates when stock and waste are empty
+- All tableau cards must be face-up
+- Rapidly moves all remaining cards to foundations
+- Can be toggled in settings (enabled by default)
+
+**Implementation:**
+- `CanAutoComplete()` checks prerequisites
+- `AutoComplete()` methodically moves cards to foundations
+- Safety limit prevents infinite loops
+- Seamlessly triggers on game state changes
+- `AutoCompleteWhenPossible` option in `GameOptions`
+
+### 3. **Interactive Help System** ❓
+Comprehensive in-game help with tabbed interface:
+- Blue "?" button in game header
+- **Current Rules Tab**: Shows your active game configuration
+  - Draw count, redeals, empty column rules
+  - Foundation→Tableau setting
+  - Scoring, notifications, auto-complete status
+- **Rule Guide Tab**: Complete game instructions
+  - How to play Klondike Solitaire
+  - Tableau and Foundation rules
+  - Detailed descriptions of all rule options
+
+**Implementation:**
+- `HelpDialog.razor` component with tabbed UI
+- Responsive design for mobile and desktop
+- Context-aware based on current `GameOptions`
+- CSS styled with green active tab indicator
+
+### 4. **Optimized Settings Dialog** 📱
+Streamlined game configuration UI:
+- More concise labels ("Draw" vs "Draw Count")
+- Removed verbose descriptions
+- Reduced spacing and padding
+- Mobile-responsive with smaller fonts
+- Maintains full functionality with cleaner appearance
+
+**Changes:**
+- Shorter option text throughout
+- Tighter spacing (16px → 14px margins)
+- Smaller fonts (1.1rem → 0.95rem)
+- Mobile breakpoint at 480px
+
+### 5. **Mobile Card Optimization** 📱
+Improved mobile experience with vertically compact cards:
+- Card height reduced by 45% (140px → 77px) on mobile
+- Width remains 100px for readability
+- Proportionally scaled typography and spacing
+- Vertical spacing between tableau cards adjusted
+- Applies to screens 768px and below
+
+**Mobile Adjustments:**
+- Card rank: 0.9rem
+- Suit symbols: 0.7rem (small), 1.4rem (large)
+- Column headers: 0.9rem
+- Tableau min-height: 220px
+- Tighter gaps throughout layout
+
+## Previous Updates
+
+### 6. **Light Blue Card Highlighting** ✨
+Selected cards display with beautiful light blue (#4dd0e1) highlighting:
 - 4px cyan border with glowing shadow effect
 - Subtle gradient overlay for better visibility
 - Smooth animations when selecting/deselecting
@@ -14,8 +90,8 @@ Selected cards now display with a beautiful light blue (#4dd0e1) highlighting:
 - CSS applies `box-shadow` and gradient overlay
 - Automatic clearing when making moves
 
-### 2. **Error Messages for Invalid Moves** ⚠️
-Contextual error messages now appear when invalid moves are attempted:
+### 7. **Error Messages for Invalid Moves** ⚠️
+Contextual error messages appear when invalid moves are attempted:
 
 **Error Types:**
 - **Foundation Errors**: "Cannot place this card on that foundation. Cards must be placed in ascending order by suit (Ace, 2, 3, ..., King)."
@@ -35,8 +111,8 @@ Contextual error messages now appear when invalid moves are attempted:
 - Check move success/failure for all move types
 - CSS animations for smooth UX
 
-### 3. **Real-Time Timer Updates** ⏱️
-The game timer now updates every second in real-time:
+### 8. **Real-Time Timer Updates** ⏱️
+The game timer updates every second in real-time:
 
 **Features:**
 - Timer increments continuously during gameplay
@@ -52,33 +128,52 @@ The game timer now updates every second in real-time:
 
 ## Technical Details
 
-### Files Modified:
-1. **GameBoard.razor**
-   - Added `@implements IDisposable`
-   - Added error message display section
-   - Updated all card components to support `IsHighlighted` parameter
-   - Implemented timer lifecycle management
-   - Enhanced move methods with error checking and contextual messages
+### Key Files Modified:
+1. **GameOptions.cs**
+   - Added `NotifyWhenNoMovesAvailable` (default: true)
+   - Added `AutoCompleteWhenPossible` (default: true)
 
-2. **game.css**
-   - Updated `.card.highlighted` with light blue styling
-   - Added `.error-message` styles with animations
-   - Added `@keyframes slideDown` for error entrance
-   - Added `@keyframes shake` for warning icon
+2. **KlondikeSolitaireGame.cs**
+   - Implemented `HasAvailableMoves()` method
+   - Implemented `CanAutoComplete()` method
+   - Implemented `AutoComplete()` method
+
+3. **GameBoard.razor**
+   - Added help button and `HelpDialog` integration
+   - Added auto-complete trigger logic
+   - Added game-over overlay
+   - Implemented `@implements IDisposable`
+   - Enhanced move methods with error checking
+
+4. **GameSettings.razor**
+   - Streamlined UI with shorter labels
+   - Added options for notifications and auto-complete
+   - Mobile-responsive styling
+
+5. **HelpDialog.razor** (new)
+   - Tabbed interface for Current Rules and Rule Guide
+   - Context-aware current rules display
+   - Comprehensive rule explanations
+
+6. **game.css**
+   - Mobile media query for card height reduction
+   - Help button styling (`.btn-help`)
+   - Game-over overlay styles
+   - Updated error message animations
+   - Card highlighting styles
 
 ### Build Status
 ✅ Build succeeded with 0 warnings and 0 errors
 
 ## User Experience Improvements
 
-**Before:**
-- No visual indication of selected cards
-- Silent failures on invalid moves
-- Timer only updated when actions occurred
-- Users had to guess why moves didn't work
-
-**After:**
-- Clear visual feedback with glowing blue highlights
-- Informative error messages explaining why moves fail
-- Smoothly incrementing timer for accurate time tracking
-- Better game flow and reduced confusion
+**Enhanced Features:**
+- ✅ Know immediately when the game is unwinnable
+- ✅ Skip tedious end-game clicking with auto-complete
+- ✅ Access help anytime without leaving the game
+- ✅ Cleaner, more mobile-friendly settings
+- ✅ Better use of vertical space on mobile devices
+- ✅ Clear visual feedback with glowing highlights
+- ✅ Informative error messages explaining failures
+- ✅ Accurate real-time timer tracking
+- ✅ Reduced confusion with better game flow
