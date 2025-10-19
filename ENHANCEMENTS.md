@@ -20,11 +20,13 @@ Automatically finishes the game when victory is guaranteed:
 - Activates when stock and waste are empty
 - All tableau cards must be face-up
 - Rapidly moves all remaining cards to foundations
+- Awards proper scoring (10 points per card moved to foundation)
 - Can be toggled in settings (enabled by default)
 
 **Implementation:**
 - `CanAutoComplete()` checks prerequisites
 - `AutoComplete()` methodically moves cards to foundations
+- Uses existing `MoveTableauToFoundation()` for proper scoring
 - Safety limit prevents infinite loops
 - Seamlessly triggers on game state changes
 - `AutoCompleteWhenPossible` option in `GameOptions`
@@ -65,16 +67,19 @@ Streamlined game configuration UI:
 Improved mobile experience with vertically compact cards:
 - Card height reduced by 45% (140px → 77px) on mobile
 - Width remains 100px for readability
-- Proportionally scaled typography and spacing
+- Enhanced typography for better readability
+- Center suit symbol hidden to reduce clutter
 - Vertical spacing between tableau cards adjusted
 - Applies to screens 768px and below
 
 **Mobile Adjustments:**
-- Card rank: 0.9rem
-- Suit symbols: 0.7rem (small), 1.4rem (large)
+- Card rank: 1.4rem (enlarged for visibility)
+- Suit symbols: 1.1rem (small, enlarged for visibility)
+- Center suit symbol: hidden on mobile
 - Column headers: 0.9rem
 - Tableau min-height: 220px
 - Tighter gaps throughout layout
+- Removed PWA standalone mode scaling
 
 ## Previous Updates
 

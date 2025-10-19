@@ -437,15 +437,16 @@
     }
 
     .card-rank {
-        font-size: 0.9rem;
+        font-size: 1.4rem;
     }
 
     .card-suit-small {
-        font-size: 0.7rem;
+        font-size: 1.1rem;
     }
 
+    /* Hide the large center suit symbol on mobile */
     .card-suit-large {
-        font-size: 1.4rem;
+        display: none;
     }
 
     .card-placeholder {
@@ -474,15 +475,5 @@
     .stock-count {
         font-size: 0.7rem;
         bottom: -12px;
-    }
-}
-
-/* PWA Standalone Mode - Scale down 15% */
-@media (display-mode: standalone) {
-    .game-board {
-        transform: scale(0.85);
-        transform-origin: top center;
-        padding: 10px 0;
-        width: 100%;
     }
 }
