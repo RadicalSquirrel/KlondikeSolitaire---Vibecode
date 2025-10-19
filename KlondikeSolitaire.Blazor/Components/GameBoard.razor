@@ -16,6 +16,7 @@
                 <span class="redeals">Redeals: @GameService.CurrentGame.StockRedeals/@(GameService.CurrentGame.Options.MaxStockRedeals < 0 ? "∞" : GameService.CurrentGame.Options.MaxStockRedeals.ToString())</span>
             </div>
             <div class="game-actions">
+                <button @onclick="OnHelpClick" class="btn btn-help" title="Help">?</button>
                 <button @onclick="OnUndoClick" class="btn btn-secondary">Undo</button>
                 <button @onclick="OnNewGame" class="btn btn-secondary">New Game</button>
             </div>
@@ -143,6 +144,22 @@
                 </div>
             </div>
         }
+        else if (GameService.CurrentGame.Options.NotifyWhenNoMovesAvailable && !GameService.CurrentGame.HasAvailableMoves())
+        {
+            <div class="game-over-overlay">
+                <div class="game-over-message">
+                    <h1>Game Over</h1>
+                    <p>No more moves available</p>
+                    @if (GameService.CurrentGame.Options.EnableScoring)
+                    {
+                        <p class="final-score">Final Score: @GameService.CurrentGame.Score</p>
+                        <p class="final-time">Time: @GameService.CurrentGame.ElapsedTime.ToString(@"mm\:ss")</p>
+                    }
+                    <button @onclick="OnNewGame" class="btn btn-primary">New Game</button>
+                    <button @onclick="OnUndoClick" class="btn btn-secondary">Undo Last Move</button>
+                </div>
+            </div>
+        }
     }
     else
     {
@@ -151,6 +168,10 @@
             <button @onclick="OnNewGame" class="btn btn-primary">Start New Game</button>
         </div>
     }
+
+    <HelpDialog IsVisible="isHelpVisible"
+                OnCancel="OnHelpClose"
+                CurrentOptions="GameService.CurrentGame?.Options" />
 </div>
 
 @code {
@@ -163,10 +184,11 @@
     private string? errorMessage;
     private System.Threading.Timer? timer;
     private TimeSpan currentElapsedTime = TimeSpan.Zero;
+    private bool isHelpVisible = false;
 
     protected override void OnInitialized()
     {
-        GameService.OnGameStateChanged += StateHasChanged;
+        GameService.OnGameStateChanged += OnGameStateChanged;
 
         // Start timer that updates every second
         timer = new System.Threading.Timer((_) =>
@@ -179,11 +201,35 @@
         }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
     }
 
+    private void OnGameStateChanged()
+    {
+        // Check for auto-complete condition
+        if (GameService.CurrentGame != null &&
+            GameService.CurrentGame.Options.AutoCompleteWhenPossible &&
+            GameService.CurrentGame.CanAutoComplete() &&
+            !GameService.CurrentGame.IsGameWon())
+        {
+            GameService.CurrentGame.AutoComplete();
+        }
+
+        StateHasChanged();
+    }
+
     private async Task OnNewGame()
     {
         ClearSelection();
         ClearError();
         await OnNewGameRequested.InvokeAsync();
+    }
+
+    private void OnHelpClick()
+    {
+        isHelpVisible = true;
+    }
+
+    private void OnHelpClose()
+    {
+        isHelpVisible = false;
     }
 
     private void OnStockClick()
@@ -246,16 +292,20 @@
         }
         else
         {
-            // Toggle selection if clicking the same foundation again
-            if (selectedFoundation == foundationIndex)
+            // Only allow selecting foundation if it has cards
+            if (GameService.CurrentGame!.Foundations[foundationIndex].Count > 0)
             {
-                ClearSelection();
-            }
-            else
-            {
-                selectedFoundation = foundationIndex;
-                selectedFromWaste = false;
-                selectedTableauCol = null;
+                // Toggle selection if clicking the same foundation again
+                if (selectedFoundation == foundationIndex)
+                {
+                    ClearSelection();
+                }
+                else
+                {
+                    selectedFoundation = foundationIndex;
+                    selectedFromWaste = false;
+                    selectedTableauCol = null;
+                }
             }
         }
     }
@@ -453,7 +503,7 @@
 
     public void Dispose()
     {
-        GameService.OnGameStateChanged -= StateHasChanged;
+        GameService.OnGameStateChanged -= OnGameStateChanged;
         timer?.Dispose();
     }
 }

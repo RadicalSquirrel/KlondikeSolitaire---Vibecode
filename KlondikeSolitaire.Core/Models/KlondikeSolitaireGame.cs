@@ -396,5 +396,156 @@
         {
             return foundations.All(f => f.Count == 13);
         }
+
+        public bool HasAvailableMoves()
+        {
+            // Check if we can draw from stock or recycle waste
+            if (stock.Count > 0)
+                return true;
+
+            if (stock.Count == 0 && waste.Count > 0)
+            {
+                // Can we recycle?
+                if (options.MaxStockRedeals < 0 || stockRedeals < options.MaxStockRedeals)
+                    return true;
+            }
+
+            // Check if the current waste card can move anywhere
+            if (wasteIndex >= 0 && wasteIndex < waste.Count)
+            {
+                var wasteCard = waste[wasteIndex];
+
+                // Can waste card go to any tableau?
+                for (int col = 0; col < 7; col++)
+                {
+                    if (CanPlaceOnTableau(wasteCard, col))
+                        return true;
+                }
+
+                // Can waste card go to any foundation?
+                for (int f = 0; f < 4; f++)
+                {
+                    if (CanPlaceOnFoundation(wasteCard, f))
+                        return true;
+                }
+            }
+
+            // Check all tableau cards
+            for (int fromCol = 0; fromCol < 7; fromCol++)
+            {
+                if (tableau[fromCol].Count == 0)
+                    continue;
+
+                // Can the top card go to a foundation?
+                var topCard = tableau[fromCol][^1];
+                for (int f = 0; f < 4; f++)
+                {
+                    if (CanPlaceOnFoundation(topCard, f))
+                        return true;
+                }
+
+                // Can any face-up cards in this column move to another tableau column?
+                for (int cardIdx = 0; cardIdx < tableau[fromCol].Count; cardIdx++)
+                {
+                    if (!tableau[fromCol][cardIdx].IsFaceUp)
+                        continue;
+
+                    var card = tableau[fromCol][cardIdx];
+                    for (int toCol = 0; toCol < 7; toCol++)
+                    {
+                        if (toCol == fromCol)
+                            continue;
+
+                        if (CanPlaceOnTableau(card, toCol))
+                            return true;
+                    }
+                }
+            }
+
+            // Check if any foundation cards can move to tableau (if allowed)
+            if (options.AllowFoundationToTableau)
+            {
+                for (int f = 0; f < 4; f++)
+                {
+                    if (foundations[f].Count == 0)
+                        continue;
+
+                    var foundationCard = foundations[f][^1];
+                    for (int col = 0; col < 7; col++)
+                    {
+                        if (CanPlaceOnTableau(foundationCard, col))
+                            return true;
+                    }
+                }
+            }
+
+            // No moves available
+            return false;
+        }
+
+        public bool CanAutoComplete()
+        {
+            // Auto-complete is only possible when:
+            // 1. Stock is empty
+            // 2. Waste is empty
+            // 3. All cards in tableau are face-up
+
+            if (stock.Count > 0 || waste.Count > 0)
+                return false;
+
+            // Check if all tableau cards are face-up
+            for (int col = 0; col < 7; col++)
+            {
+                foreach (var card in tableau[col])
+                {
+                    if (!card.IsFaceUp)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool AutoComplete()
+        {
+            if (!CanAutoComplete())
+                return false;
+
+            bool madeMoves = true;
+            int maxIterations = 1000; // Safety limit to prevent infinite loops
+            int iterations = 0;
+
+            // Keep moving cards to foundations until no more moves possible
+            while (madeMoves && iterations < maxIterations)
+            {
+                madeMoves = false;
+                iterations++;
+
+                // Try to move each tableau column's top card to a foundation
+                for (int col = 0; col < 7; col++)
+                {
+                    if (tableau[col].Count == 0)
+                        continue;
+
+                    var topCard = tableau[col][^1];
+
+                    // Find the appropriate foundation for this card
+                    for (int f = 0; f < 4; f++)
+                    {
+                        if (CanPlaceOnFoundation(topCard, f))
+                        {
+                            MoveTableauToFoundation(col, f);
+                            madeMoves = true;
+                            break; // Move to next column
+                        }
+                    }
+
+                    if (madeMoves)
+                        break; // Start over from first column
+                }
+            }
+
+            return IsGameWon();
+        }
     }
 }

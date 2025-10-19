@@ -7,6 +7,8 @@
         public bool AllowFoundationToTableau { get; set; } = false;
         public int MaxStockRedeals { get; set; } = -1;
         public bool EnableScoring { get; set; } = true;
+        public bool NotifyWhenNoMovesAvailable { get; set; } = true;
+        public bool AutoCompleteWhenPossible { get; set; } = true;
 
         public string GetConfigKey()
         {

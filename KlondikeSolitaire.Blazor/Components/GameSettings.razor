@@ -9,46 +9,57 @@
 
         <div class="settings-body">
             <div class="setting-group">
-                <label>
-                    <input type="checkbox" @bind="options.AllowAnyCardInEmptyTableau" />
-                    <span>Allow any card in empty tableau column</span>
-                </label>
-                <p class="setting-description">When disabled, only Kings can be placed in empty tableau columns (standard rules)</p>
+                <label>Draw</label>
+                <select @bind="drawCountString" class="setting-select">
+                    <option value="1">1 Card</option>
+                    <option value="3">3 Cards</option>
+                </select>
             </div>
 
             <div class="setting-group">
-                <label>Draw Count</label>
-                <select @bind="drawCountString" class="setting-select">
-                    <option value="1">Draw 1 Card (Easier)</option>
-                    <option value="3">Draw 3 Cards (Standard)</option>
+                <label>Redeals</label>
+                <select @bind="redealString" class="setting-select">
+                    <option value="-1">Unlimited</option>
+                    <option value="0">None</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
                 </select>
+            </div>
+
+            <div class="setting-group">
+                <label>
+                    <input type="checkbox" @bind="options.AllowAnyCardInEmptyTableau" />
+                    <span>Any card in empty column</span>
+                </label>
             </div>
 
             <div class="setting-group">
                 <label>
                     <input type="checkbox" @bind="options.AllowFoundationToTableau" />
-                    <span>Allow moving cards from Foundation back to Tableau</span>
+                    <span>Foundation to tableau</span>
                 </label>
-                <p class="setting-description">Enable strategic moves by allowing cards to be moved back from foundations</p>
-            </div>
-
-            <div class="setting-group">
-                <label>Maximum Stock Redeals</label>
-                <select @bind="redealString" class="setting-select">
-                    <option value="-1">Unlimited</option>
-                    <option value="0">None</option>
-                    <option value="1">1 Redeal</option>
-                    <option value="2">2 Redeals</option>
-                    <option value="3">3 Redeals</option>
-                </select>
             </div>
 
             <div class="setting-group">
                 <label>
                     <input type="checkbox" @bind="options.EnableScoring" />
-                    <span>Enable Scoring</span>
+                    <span>Scoring</span>
                 </label>
-                <p class="setting-description">Track your score and time during gameplay</p>
+            </div>
+
+            <div class="setting-group">
+                <label>
+                    <input type="checkbox" @bind="options.NotifyWhenNoMovesAvailable" />
+                    <span>Game over notification</span>
+                </label>
+            </div>
+
+            <div class="setting-group">
+                <label>
+                    <input type="checkbox" @bind="options.AutoCompleteWhenPossible" />
+                    <span>Auto-complete</span>
+                </label>
             </div>
         </div>
 
@@ -91,14 +102,14 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 20px 25px;
+        padding: 16px 20px;
         border-bottom: 1px solid #e0e0e0;
     }
 
     .settings-header h2 {
         margin: 0;
         color: #333;
-        font-size: 1.8rem;
+        font-size: 1.4rem;
     }
 
     .close-btn {
@@ -122,45 +133,39 @@
     }
 
     .settings-body {
-        padding: 25px;
+        padding: 20px;
     }
 
     .setting-group {
-        margin-bottom: 25px;
+        margin-bottom: 16px;
     }
 
     .setting-group label {
         display: block;
         font-weight: 600;
         color: #333;
-        margin-bottom: 8px;
-        font-size: 1.1rem;
+        margin-bottom: 6px;
+        font-size: 0.95rem;
     }
 
     .setting-group label input[type="checkbox"] {
-        margin-right: 10px;
-        width: 18px;
-        height: 18px;
+        margin-right: 8px;
+        width: 16px;
+        height: 16px;
         cursor: pointer;
     }
 
     .setting-group label span {
         cursor: pointer;
-    }
-
-    .setting-description {
-        margin: 8px 0 0 0;
-        color: #757575;
-        font-size: 0.9rem;
-        line-height: 1.4;
+        font-size: 0.95rem;
     }
 
     .setting-select {
         width: 100%;
-        padding: 10px 12px;
+        padding: 8px 10px;
         border: 1px solid #ccc;
         border-radius: 6px;
-        font-size: 1rem;
+        font-size: 0.95rem;
         background: white;
         cursor: pointer;
         transition: border-color 0.2s ease;
@@ -172,11 +177,33 @@
     }
 
     .settings-footer {
-        padding: 20px 25px;
+        padding: 16px 20px;
         border-top: 1px solid #e0e0e0;
         display: flex;
         gap: 10px;
         justify-content: flex-end;
+    }
+
+    @@media (max-width: 480px) {
+        .settings-dialog {
+            max-width: 95%;
+        }
+
+        .settings-header h2 {
+            font-size: 1.2rem;
+        }
+
+        .settings-body {
+            padding: 16px;
+        }
+
+        .setting-group {
+            margin-bottom: 14px;
+        }
+
+        .settings-footer {
+            padding: 14px 16px;
+        }
     }
 </style>
 
@@ -201,7 +228,9 @@
                 DrawCount = LastGameOptions.DrawCount,
                 AllowFoundationToTableau = LastGameOptions.AllowFoundationToTableau,
                 MaxStockRedeals = LastGameOptions.MaxStockRedeals,
-                EnableScoring = LastGameOptions.EnableScoring
+                EnableScoring = LastGameOptions.EnableScoring,
+                NotifyWhenNoMovesAvailable = LastGameOptions.NotifyWhenNoMovesAvailable,
+                AutoCompleteWhenPossible = LastGameOptions.AutoCompleteWhenPossible
             };
             drawCountString = LastGameOptions.DrawCount.ToString();
             redealString = LastGameOptions.MaxStockRedeals.ToString();
@@ -220,7 +249,9 @@
             DrawCount = 3,
             AllowFoundationToTableau = false,
             MaxStockRedeals = -1,
-            EnableScoring = true
+            EnableScoring = true,
+            NotifyWhenNoMovesAvailable = true,
+            AutoCompleteWhenPossible = true
         };
         drawCountString = "3";
         redealString = "-1";
