@@ -3,22 +3,26 @@
 ## Latest Updates (January 2025)
 
 ### Mobile Card Sizing and Layout Improvements 📱
-Consistent card sizing and stable layout across all game areas:
-- **Unified card dimensions**: All cards (stock, waste, foundations, tableau) now have the same size on mobile
-- **Removed tableau distortion**: Eliminated the transform scale that made tableau cards appear half-height
-- **Optimal card sizing**: Reduced all card widths by 12% on mobile (100px → 88px) for better screen utilization
-- **Fixed foundation positioning**: Stock/waste area now has constrained width to prevent foundations from shifting when drawing cards
-- **Proportional waste overlap**: Adjusted waste card overlap (-60px → -53px) to maintain visual consistency with smaller cards
-- **Tighter spacing**: Reduced gaps and padding throughout (20px → 10px) for more efficient use of mobile screen space
+Optimized card sizing at 50% scale with maintained text readability:
+- **50% card scaling**: Cards reduced to exactly half size on mobile (100px → 50px width, 140px → 70px height)
+- **Preserved text size**: Rank (1.4rem) and suit (1.1rem) text kept full-sized for excellent readability
+- **Unified card dimensions**: All cards (stock, waste, foundations, tableau) consistent across game areas
+- **CSS variable spacing**: Tableau card vertical spacing uses CSS variables for responsive adjustment (35px desktop → 18px mobile)
+- **Fixed foundation positioning**: Stock/waste area constrained to 106px width to prevent layout shift
+- **Proportional spacing**: All gaps scaled proportionally (20px → 10px → 6px) for efficient mobile space use
+- **Optimized UI elements**: Buttons, padding, and fonts adjusted for mobile screens
 
 **Implementation Details:**
-- Direct modification of `.card` width/height in mobile media query (no additional scaling)
-- Fixed-width `.stock-waste-area` (186px) prevents layout shift between 1-card and 3-card draw
+- Direct `.card` dimension modification in mobile media query (50% of desktop)
+- Converted inline `margin-top` to CSS variable `--row-index` for responsive tableau spacing
+- Fixed-width `.stock-waste-area` (106px = 50px + 6px + 50px) prevents foundation movement
+- Waste card overlap proportionally adjusted (-60px → -30px) for 50% sizing
 - Foundations positioned with `flex: 1` and `justify-content: flex-end` for stability
-- Removed problematic `transform: scale(1, 0.55)` from `.tableau-card`
-- Comprehensive mobile spacing optimization across all game elements
+- Comprehensive spacing optimization: buttons, padding, gaps all scaled appropriately
 
-**File Modified:** `game.css:430-512`
+**Files Modified:**
+- `game.css:166-534` - Card sizing, spacing variables, mobile responsive styles
+- `GameBoard.razor:114` - CSS variable integration for tableau positioning
 
 ## Previous Updates (January 2025)
 
