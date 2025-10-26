@@ -2,6 +2,26 @@
 
 ## Latest Updates (January 2025)
 
+### Mobile Card Sizing and Layout Improvements 📱
+Consistent card sizing and stable layout across all game areas:
+- **Unified card dimensions**: All cards (stock, waste, foundations, tableau) now have the same size on mobile
+- **Removed tableau distortion**: Eliminated the transform scale that made tableau cards appear half-height
+- **Optimal card sizing**: Reduced all card widths by 12% on mobile (100px → 88px) for better screen utilization
+- **Fixed foundation positioning**: Stock/waste area now has constrained width to prevent foundations from shifting when drawing cards
+- **Proportional waste overlap**: Adjusted waste card overlap (-60px → -53px) to maintain visual consistency with smaller cards
+- **Tighter spacing**: Reduced gaps and padding throughout (20px → 10px) for more efficient use of mobile screen space
+
+**Implementation Details:**
+- Direct modification of `.card` width/height in mobile media query (no additional scaling)
+- Fixed-width `.stock-waste-area` (186px) prevents layout shift between 1-card and 3-card draw
+- Foundations positioned with `flex: 1` and `justify-content: flex-end` for stability
+- Removed problematic `transform: scale(1, 0.55)` from `.tableau-card`
+- Comprehensive mobile spacing optimization across all game elements
+
+**File Modified:** `game.css:430-512`
+
+## Previous Updates (January 2025)
+
 ### 1. **Game Over Notifications** 🚫
 Intelligent detection when no legal moves remain:
 - Checks all possible moves based on current ruleset
@@ -63,7 +83,10 @@ Streamlined game configuration UI:
 - Smaller fonts (1.1rem → 0.95rem)
 - Mobile breakpoint at 480px
 
-### 5. **Mobile Card Optimization** 📱
+### 5. **Mobile Card Optimization** 📱 *(Superseded by Mobile Card Sizing improvements above)*
+<details>
+<summary>Previous mobile optimization attempt (replaced)</summary>
+
 Improved mobile experience with vertically compact cards:
 - Card height reduced by 45% (140px → 77px) on mobile
 - Width remains 100px for readability
@@ -80,6 +103,9 @@ Improved mobile experience with vertically compact cards:
 - Tableau min-height: 220px
 - Tighter gaps throughout layout
 - Removed PWA standalone mode scaling
+
+**Note:** This approach was replaced with the unified card sizing approach detailed at the top of this document.
+</details>
 
 ## Previous Updates
 
