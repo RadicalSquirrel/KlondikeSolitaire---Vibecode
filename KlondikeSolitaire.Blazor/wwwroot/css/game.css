@@ -426,10 +426,12 @@
     }
 }
 
-/* Mobile Styles - Reduce card height by 45% */
+/* Mobile Styles */
 @media (max-width: 768px) {
+    /* Reduce card dimensions by ~12% */
     .card {
-        height: 77px; /* Reduced from 140px */
+        width: 88px; /* Reduced from 100px */
+        height: 123px; /* Reduced from 140px */
     }
 
     .card-content {
@@ -455,16 +457,12 @@
 
     .tableau-column {
         min-height: 220px;
+        max-width: 105px; /* Adjust for smaller cards */
     }
 
-    /* Reduce vertical spacing between tableau cards */
+    /* Adjust vertical spacing between tableau cards */
     .tableau-card {
-        transform: scale(1, 0.55);
-        transform-origin: top center;
-    }
-
-    .tableau-card:hover {
-        transform: scale(1.05, 0.6);
+        /* Remove the transform scale that was causing half-height cards */
     }
 
     .column-header {
@@ -475,5 +473,40 @@
     .stock-count {
         font-size: 0.7rem;
         bottom: -12px;
+    }
+
+    /* Adjust waste card overlap for smaller cards */
+    .waste {
+        min-width: 88px; /* Match new card width */
+    }
+
+    .waste-card:not(:first-child) {
+        margin-left: -53px; /* Adjusted from -60px for smaller cards */
+    }
+
+    /* Fix top area layout to prevent foundation movement */
+    .top-area {
+        margin-bottom: 30px;
+        gap: 10px;
+    }
+
+    .stock-waste-area {
+        gap: 10px;
+        min-width: 186px; /* 88px + 10px + 88px (stock + gap + waste) */
+        max-width: 186px;
+    }
+
+    .foundations {
+        gap: 10px;
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    .tableau {
+        gap: 10px;
+    }
+
+    .game-board {
+        padding: 10px;
     }
 }
