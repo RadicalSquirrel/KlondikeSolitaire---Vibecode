@@ -9,6 +9,7 @@
         public bool EnableScoring { get; set; } = true;
         public bool NotifyWhenNoMovesAvailable { get; set; } = true;
         public bool AutoCompleteWhenPossible { get; set; } = true;
+        public bool ReverseWasteOnRecycle { get; set; } = false;
 
         public string GetConfigKey()
         {

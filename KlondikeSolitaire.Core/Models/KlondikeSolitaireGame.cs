@@ -88,7 +88,20 @@
                     ScoreChange = -100
                 };
 
-                stock.AddRange(waste);
+                // Add cards to stock - reverse if option is enabled
+                if (options.ReverseWasteOnRecycle)
+                {
+                    // Reverse the order when moving back to stock
+                    var reversedWaste = new List<Card>(waste);
+                    reversedWaste.Reverse();
+                    stock.AddRange(reversedWaste);
+                }
+                else
+                {
+                    // Keep the same order (current behavior)
+                    stock.AddRange(waste);
+                }
+
                 waste.Clear();
                 wasteIndex = -1;
                 stockRedeals++;

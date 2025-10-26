@@ -7,6 +7,11 @@
             <button class="close-btn" @onclick="OnClose">✕</button>
         </div>
 
+        <div class="settings-actions">
+            <button @onclick="OnStartGame" class="btn btn-primary">Start Game</button>
+            <button @onclick="OnClose" class="btn btn-secondary">Cancel</button>
+        </div>
+
         <div class="settings-body">
             <div class="setting-group">
                 <label>Draw</label>
@@ -61,11 +66,13 @@
                     <span>Auto-complete</span>
                 </label>
             </div>
-        </div>
 
-        <div class="settings-footer">
-            <button @onclick="OnStartGame" class="btn btn-primary">Start Game</button>
-            <button @onclick="OnClose" class="btn btn-secondary">Cancel</button>
+            <div class="setting-group">
+                <label>
+                    <input type="checkbox" @bind="options.ReverseWasteOnRecycle" />
+                    <span>Reverse waste when recycling</span>
+                </label>
+            </div>
         </div>
     </div>
 </div>
@@ -132,6 +139,14 @@
         color: #333;
     }
 
+    .settings-actions {
+        padding: 16px 20px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-start;
+    }
+
     .settings-body {
         padding: 20px;
     }
@@ -176,14 +191,6 @@
         border-color: #4CAF50;
     }
 
-    .settings-footer {
-        padding: 16px 20px;
-        border-top: 1px solid #e0e0e0;
-        display: flex;
-        gap: 10px;
-        justify-content: flex-end;
-    }
-
     @@media (max-width: 480px) {
         .settings-dialog {
             max-width: 95%;
@@ -201,7 +208,7 @@
             margin-bottom: 14px;
         }
 
-        .settings-footer {
+        .settings-actions {
             padding: 14px 16px;
         }
     }
@@ -230,7 +237,8 @@
                 MaxStockRedeals = LastGameOptions.MaxStockRedeals,
                 EnableScoring = LastGameOptions.EnableScoring,
                 NotifyWhenNoMovesAvailable = LastGameOptions.NotifyWhenNoMovesAvailable,
-                AutoCompleteWhenPossible = LastGameOptions.AutoCompleteWhenPossible
+                AutoCompleteWhenPossible = LastGameOptions.AutoCompleteWhenPossible,
+                ReverseWasteOnRecycle = LastGameOptions.ReverseWasteOnRecycle
             };
             drawCountString = LastGameOptions.DrawCount.ToString();
             redealString = LastGameOptions.MaxStockRedeals.ToString();
@@ -251,7 +259,8 @@
             MaxStockRedeals = -1,
             EnableScoring = true,
             NotifyWhenNoMovesAvailable = true,
-            AutoCompleteWhenPossible = true
+            AutoCompleteWhenPossible = true,
+            ReverseWasteOnRecycle = false
         };
         drawCountString = "3";
         redealString = "-1";
