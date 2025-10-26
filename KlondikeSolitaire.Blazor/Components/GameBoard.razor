@@ -111,7 +111,7 @@
                             var canDrag = card.IsFaceUp;
 
                             <div class="tableau-card"
-                                 style="margin-top: @(row * 35)px; z-index: @(card.IsFaceUp ? 100 + row : row);"
+                                 style="--row-index: @row; z-index: @(card.IsFaceUp ? 100 + row : row);"
                                  @onclick="() => OnTableauCardClick(colIndex, cardRow)">
                                 <CardComponent Card="card"
                                                IsDraggable="@canDrag"

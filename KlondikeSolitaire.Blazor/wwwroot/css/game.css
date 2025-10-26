@@ -169,6 +169,7 @@
     left: 0;
     cursor: pointer;
     transition: transform 0.2s ease;
+    margin-top: calc(var(--row-index, 0) * 35px);
 }
 
 .tableau-card:hover {
@@ -428,16 +429,17 @@
 
 /* Mobile Styles */
 @media (max-width: 768px) {
-    /* Reduce card dimensions by ~12% */
+    /* Reduce card dimensions to 50% of desktop size */
     .card {
-        width: 88px; /* Reduced from 100px */
-        height: 123px; /* Reduced from 140px */
+        width: 50px; /* 50% of 100px */
+        height: 70px; /* 50% of 140px */
     }
 
     .card-content {
-        padding: 5px;
+        padding: 3px;
     }
 
+    /* Keep text size the same - don't reduce */
     .card-rank {
         font-size: 1.4rem;
     }
@@ -456,57 +458,78 @@
     }
 
     .tableau-column {
-        min-height: 220px;
-        max-width: 105px; /* Adjust for smaller cards */
-    }
-
-    /* Adjust vertical spacing between tableau cards */
-    .tableau-card {
-        /* Remove the transform scale that was causing half-height cards */
+        min-height: 180px;
+        max-width: 60px; /* Adjust for 50% sized cards */
     }
 
     .column-header {
-        font-size: 0.9rem;
-        margin-bottom: 5px;
+        font-size: 0.8rem;
+        margin-bottom: 3px;
     }
 
     .stock-count {
-        font-size: 0.7rem;
-        bottom: -12px;
+        font-size: 0.65rem;
+        bottom: -10px;
     }
 
-    /* Adjust waste card overlap for smaller cards */
+    /* Adjust waste card overlap for 50% sized cards */
     .waste {
-        min-width: 88px; /* Match new card width */
+        min-width: 50px; /* Match new card width */
     }
 
     .waste-card:not(:first-child) {
-        margin-left: -53px; /* Adjusted from -60px for smaller cards */
+        margin-left: -30px; /* 50% of original -60px overlap */
     }
 
     /* Fix top area layout to prevent foundation movement */
     .top-area {
-        margin-bottom: 30px;
-        gap: 10px;
+        margin-bottom: 20px;
+        gap: 6px;
     }
 
     .stock-waste-area {
-        gap: 10px;
-        min-width: 186px; /* 88px + 10px + 88px (stock + gap + waste) */
-        max-width: 186px;
+        gap: 6px;
+        min-width: 106px; /* 50px + 6px + 50px (stock + gap + waste) */
+        max-width: 106px;
     }
 
     .foundations {
-        gap: 10px;
+        gap: 6px;
         flex: 1;
         justify-content: flex-end;
     }
 
     .tableau {
-        gap: 10px;
+        gap: 6px;
+    }
+
+    /* Adjust vertical spacing between tableau cards to 50% */
+    .tableau-card {
+        margin-top: calc(var(--row-index, 0) * 18px); /* 50% of 35px = 17.5px, rounded to 18px */
     }
 
     .game-board {
+        padding: 8px;
+    }
+
+    .game-info {
         padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    .game-stats {
+        gap: 15px;
+        font-size: 0.95rem;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .btn-help {
+        width: 36px;
+        height: 36px;
+        font-size: 1.2rem;
     }
 }
