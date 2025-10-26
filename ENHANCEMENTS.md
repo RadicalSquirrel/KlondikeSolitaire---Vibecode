@@ -2,6 +2,28 @@
 
 ## Latest Updates (January 2025)
 
+### Waste Reversal Option and UI Improvements 🔄
+New gameplay option and improved settings dialog UX:
+- **Waste reversal on recycle**: Optional setting to reverse card order when recycling waste back to stock (default: off)
+  - Fixes the backwards sorting behavior that occurred during stock recycling
+  - Configurable via checkbox in game settings
+  - Preserves traditional Klondike behavior by default
+- **Improved settings dialog layout**: Start Game and Cancel buttons moved to top of dialog
+  - Buttons now appear immediately below the header for better accessibility
+  - Removed redundant bottom footer for cleaner interface
+  - Actions are visible without scrolling on any screen size
+
+**Implementation Details:**
+- Added `ReverseWasteOnRecycle` boolean property to `GameOptions` (default: false)
+- Modified `DrawFromStock()` to conditionally reverse waste pile when recycling to stock
+- Restructured `GameSettings.razor` component with new `.settings-actions` section
+- Settings option persisted across game sessions via existing settings mechanism
+
+**Files Modified:**
+- `GameOptions.cs:12` - New ReverseWasteOnRecycle property
+- `KlondikeSolitaireGame.cs:91-103` - Conditional waste reversal logic
+- `GameSettings.razor:10-13,70-75` - UI restructuring and new option
+
 ### Mobile Card Sizing and Layout Improvements 📱
 Optimized card sizing at 50% scale with maintained text readability:
 - **50% card scaling**: Cards reduced to exactly half size on mobile (100px → 50px width, 140px → 70px height)
