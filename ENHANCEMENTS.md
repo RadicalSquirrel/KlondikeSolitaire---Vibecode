@@ -2,6 +2,19 @@
 
 ## Latest Updates (January 2025)
 
+### Unified Green Background 🎨
+Page-wide visual consistency:
+- **Matching background**: Page background now uses the same green felt gradient as the game board
+- **Seamless appearance**: Eliminates visual discontinuity outside the game area
+- **Full viewport coverage**: min-height: 100vh ensures gradient covers entire screen
+
+**Implementation:**
+- Applied `linear-gradient(135deg, #1e5128 0%, #2d6a4f 100%)` to html/body elements
+- Matches existing game board background for cohesive design
+
+**File Modified:**
+- `app.css:3-4` - Background gradient and viewport height
+
 ### Waste Reversal Option and UI Improvements 🔄
 New gameplay option and improved settings dialog UX:
 - **Waste reversal on recycle**: Optional setting to reverse card order when recycling waste back to stock (default: off)
