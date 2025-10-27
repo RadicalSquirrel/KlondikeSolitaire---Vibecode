@@ -38,25 +38,36 @@ New gameplay option and improved settings dialog UX:
 - `GameSettings.razor:10-13,70-75` - UI restructuring and new option
 
 ### Mobile Card Sizing and Layout Improvements 📱
-Optimized card sizing at 50% scale with maintained text readability:
-- **50% card scaling**: Cards reduced to exactly half size on mobile (100px → 50px width, 140px → 70px height)
-- **Preserved text size**: Rank (1.4rem) and suit (1.1rem) text kept full-sized for excellent readability
+Optimized card sizing with orientation-aware scaling and maintained text readability:
+- **Portrait mode (50% scaling)**: Cards reduced to half size (100px → 50px width, 70px → 105px height)
+  - Optimal for vertical space utilization on narrow screens
+  - Compact layout allows full game visibility
+- **Landscape mode (75% scaling)**: Cards increased to 75% of desktop size (100px → 75px width, 140px → 105px height)
+  - Better visibility and usability when device is rotated horizontally
+  - Takes advantage of wider viewport
+  - More comfortable card manipulation in landscape orientation
+- **Preserved text size**: Rank (1.4rem) and suit (1.1rem) text kept full-sized for excellent readability across all orientations
 - **Unified card dimensions**: All cards (stock, waste, foundations, tableau) consistent across game areas
-- **CSS variable spacing**: Tableau card vertical spacing uses CSS variables for responsive adjustment (35px desktop → 18px mobile)
-- **Fixed foundation positioning**: Stock/waste area constrained to 106px width to prevent layout shift
-- **Proportional spacing**: All gaps scaled proportionally (20px → 10px → 6px) for efficient mobile space use
-- **Optimized UI elements**: Buttons, padding, and fonts adjusted for mobile screens
+- **CSS variable spacing**: Tableau card vertical spacing uses CSS variables for responsive adjustment
+  - Desktop: 35px, Portrait: 18px, Landscape: 26px
+- **Orientation-specific layouts**:
+  - Portrait: 106px stock-waste-area width, 6px gaps
+  - Landscape: 158px stock-waste-area width, 8px gaps
+- **Fixed foundation positioning**: Stock/waste area constrained to prevent layout shift in both orientations
+- **Optimized UI elements**: Buttons, padding, and fonts adjusted per orientation
 
 **Implementation Details:**
-- Direct `.card` dimension modification in mobile media query (50% of desktop)
+- Base mobile query `@media (max-width: 768px)` for portrait/default mobile
+- Landscape override `@media (max-width: 768px) and (orientation: landscape)` for horizontal devices
+- Direct `.card` dimension modification in media queries (50% portrait, 75% landscape)
 - Converted inline `margin-top` to CSS variable `--row-index` for responsive tableau spacing
-- Fixed-width `.stock-waste-area` (106px = 50px + 6px + 50px) prevents foundation movement
-- Waste card overlap proportionally adjusted (-60px → -30px) for 50% sizing
+- Fixed-width `.stock-waste-area` prevents foundation movement (106px portrait, 158px landscape)
+- Waste card overlap proportionally adjusted (-30px portrait, -45px landscape)
 - Foundations positioned with `flex: 1` and `justify-content: flex-end` for stability
-- Comprehensive spacing optimization: buttons, padding, gaps all scaled appropriately
+- Comprehensive spacing optimization across orientations
 
 **Files Modified:**
-- `game.css:166-534` - Card sizing, spacing variables, mobile responsive styles
+- `game.css:166-626` - Card sizing, spacing variables, mobile responsive styles, landscape media query
 - `GameBoard.razor:114` - CSS variable integration for tableau positioning
 
 ## Previous Updates (January 2025)
