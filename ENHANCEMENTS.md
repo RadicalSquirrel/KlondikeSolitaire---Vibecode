@@ -2,6 +2,39 @@
 
 ## Latest Updates (January 2025)
 
+### Difficulty-Based Score Multipliers 🎯
+Dynamic scoring system that adjusts based on game difficulty:
+- **Score multipliers** displayed in settings UI before each option (e.g., "1.5x", "0.9x")
+- **3-card draw**: 1.5x multiplier (significantly harder than 1-card)
+- **1-card draw**: 1.0x baseline multiplier
+- **Any card in empty tableau**: 0.9x (makes game easier)
+- **Foundation to tableau**: 0.9x (provides more flexibility)
+- **Limited redeals**: 1.1x-1.3x based on restriction level
+  - No redeals: 1.3x
+  - 1 redeal: 1.2x
+  - 2 redeals: 1.1x
+  - 3+ or unlimited: 1.0x (no bonus)
+- **Multipliers stack**: Combined multiplicatively (e.g., 3-card + no redeals = 1.95x)
+- **Applied to all actions**: Both positive and negative score changes affected
+- **Only active when scoring enabled**: Multipliers hidden when scoring is off
+
+**Example Combinations:**
+- 3-card, unlimited redeals, King-only: 1.5x (moderate difficulty)
+- 3-card, no redeals, King-only: 1.95x (very hard)
+- 1-card, any card, foundation→tableau: 0.81x (very easy)
+
+**Implementation Details:**
+- `GetScoreMultiplier()` calculates combined difficulty multiplier
+- `GetScoreMultiplierDisplay()` formats multiplier for UI (e.g., "1.5x")
+- `AddScore()` applies multiplier via `Math.Round()` to all point changes
+- GameSettings UI shows real-time multiplier updates as options change
+- CSS styling for multiplier display (blue, bold, right-aligned)
+
+**Files Modified:**
+- `GameOptions.cs:18-61` - Multiplier calculation and display methods
+- `KlondikeSolitaireGame.cs:66-75` - Apply multiplier to all score changes
+- `GameSettings.razor:35-66,190-198,309-316` - UI display and styling
+
 ### Unified Green Background 🎨
 Page-wide visual consistency:
 - **Matching background**: Page background now uses the same green felt gradient as the game board
