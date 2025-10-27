@@ -34,6 +34,10 @@
 
             <div class="setting-group">
                 <label>
+                    @if (options.EnableScoring)
+                    {
+                        <span class="score-multiplier">0.9x</span>
+                    }
                     <input type="checkbox" @bind="options.AllowAnyCardInEmptyTableau" />
                     <span>Any card in empty column</span>
                 </label>
@@ -41,6 +45,10 @@
 
             <div class="setting-group">
                 <label>
+                    @if (options.EnableScoring)
+                    {
+                        <span class="score-multiplier">0.9x</span>
+                    }
                     <input type="checkbox" @bind="options.AllowFoundationToTableau" />
                     <span>Foundation to tableau</span>
                 </label>
@@ -48,6 +56,10 @@
 
             <div class="setting-group">
                 <label>
+                    @if (options.EnableScoring)
+                    {
+                        <span class="score-multiplier">@GetCurrentMultiplierDisplay()</span>
+                    }
                     <input type="checkbox" @bind="options.EnableScoring" />
                     <span>Scoring</span>
                 </label>
@@ -175,6 +187,16 @@
         font-size: 0.95rem;
     }
 
+    .score-multiplier {
+        display: inline-block;
+        min-width: 45px;
+        margin-right: 8px;
+        font-weight: 700;
+        color: #1565c0;
+        font-size: 0.9rem;
+        text-align: right;
+    }
+
     .setting-select {
         width: 100%;
         padding: 8px 10px;
@@ -282,5 +304,14 @@
     private async Task OnOverlayClick()
     {
         await OnClose();
+    }
+
+    private string GetCurrentMultiplierDisplay()
+    {
+        // Update options with current selections
+        options.DrawCount = int.Parse(drawCountString);
+        options.MaxStockRedeals = int.Parse(redealString);
+
+        return options.GetScoreMultiplierDisplay();
     }
 }

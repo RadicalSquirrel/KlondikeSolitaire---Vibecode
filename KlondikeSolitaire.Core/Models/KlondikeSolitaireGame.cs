@@ -67,7 +67,10 @@
         {
             if (options.EnableScoring)
             {
-                score += points;
+                // Apply difficulty multiplier to all score changes
+                double multiplier = options.GetScoreMultiplier();
+                int adjustedPoints = (int)Math.Round(points * multiplier);
+                score += adjustedPoints;
             }
         }
 
